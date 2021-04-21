@@ -7,10 +7,12 @@ import (
 
 func main() {
 	s := newServer()
+	go s.Run()
 
+	// List on port 8080
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
-		log.Fatal("Unable to start server: %s", err.Error())
+		log.Fatalf("Unable to start server: %s", err.Error())
 	}
 
 	defer listener.Close()

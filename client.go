@@ -8,9 +8,10 @@ import (
 )
 
 type client struct {
-	conn     net.Conn
-	nick     string
-	room     *room
+	conn net.Conn
+	nick string
+	room *room
+	// commands only receive from command type
 	commands chan<- command
 }
 
@@ -22,7 +23,6 @@ func (c *client) readInput() {
 		}
 
 		msg = strings.Trim(msg, "\r\n")
-
 		args := strings.Split(msg, " ")
 		cmd := strings.TrimSpace(args[0])
 
@@ -39,6 +39,25 @@ func (c *client) readInput() {
 				client: c,
 				args:   args,
 			}
+		case "/rooms":
+			c.commands <- command{
+				id:     CMD_ROOMS,
+				client: c,
+				args:   args,
+			}
+		case "/msg":
+			c.commands <- command{
+				id:     CMD_MSG,
+				client: c,
+				args:   args,
+			}
+		case "/quit":
+			c.commands <- command{
+				id:     CMD_QUIT,
+				client: c,
+				args:   args,
+			}
+
 		default:
 			c.err(fmt.Errorf("Unknow command: %s", cmd))
 		}
