@@ -6,3 +6,6 @@ lint_local:
 
 format:
 	go fmt ./...
+
+uninstall:
+	rm -rf tcp-chat
