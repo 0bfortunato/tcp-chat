@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 )
 
 type server struct {
@@ -26,11 +27,11 @@ func (s *server) run() {
 		case CMD_JOIN:
 			s.join(cmd.client, cmd.args)
 		case CMD_ROOMS:
-			s.listRooms(cmd.client, cmd.args)
+			s.listRooms(cmd.client)
 		case CMD_MSG:
 			s.msg(cmd.client, cmd.args)
 		case CMD_QUIT:
-			s.quit(cmd.client, cmd.args)
+			s.quit(cmd.client)
 		}
 	}
 }
@@ -59,8 +60,65 @@ func (s *server) nick(c *client, args []string) {
 }
 
 func (s *server) join(c *client, args []string) {
+
 	if len(args) < 2 {
 		c.msg("Room name is required. Usage: /join <ROOM-NAME>")
 		return
+	}
+
+	roomName := args[1]
+
+	r, ok := s.rooms[roomName]
+	if !ok {
+		r = &room{
+			name:    roomName,
+			members: make(map[net.Addr]*client),
+		}
+
+		s.rooms[roomName] = r
+	}
+
+	r.members[c.conn.LocalAddr()] = c
+
+	s.quitCurrentRoom(c)
+	c.room = r
+
+	r.broadcast(c, fmt.Sprintf("%s joined the room", c.nick))
+
+	c.msg(fmt.Sprintf("Welcome to %s", roomName))
+}
+
+func (s *server) listRooms(c *client) {
+	var rooms []string
+	for name := range s.rooms {
+		rooms = append(rooms, name)
+	}
+
+	c.msg(fmt.Sprintf("Avaible rooms: %s", strings.Join(rooms, ", ")))
+}
+
+func (s *server) msg(c *client, args []string) {
+	if len(args) < 2 {
+		c.msg("Message is required, usage: /msg <MSG>")
+		return
+	}
+	msg := strings.Join(args[1:], " ")
+	c.room.broadcast(c, c.nick+": "+msg)
+}
+
+func (s *server) quit(c *client) {
+	log.Printf("Client has left the chat: %s", c.conn.RemoteAddr().String())
+
+	s.quitCurrentRoom(c)
+
+	c.msg("Sad to see u go :/")
+	c.conn.Close()
+}
+
+func (s *server) quitCurrentRoom(c *client) {
+	if c.room != nil {
+		oldRoom := s.rooms[c.room.name]
+		delete(s.rooms[c.room.name].members, c.conn.RemoteAddr())
+		oldRoom.broadcast(c, fmt.Sprintf("%s has left the room", c.nick))
 	}
 }

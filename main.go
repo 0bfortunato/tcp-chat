@@ -7,7 +7,7 @@ import (
 
 func main() {
 	s := newServer()
-	go s.Run()
+	go s.run()
 
 	// List on port 8080
 	listener, err := net.Listen("tcp", ":8080")
