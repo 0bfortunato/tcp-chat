@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 )
@@ -16,7 +17,7 @@ func main() {
 	}
 
 	defer listener.Close()
-	log.Printf("Started server on :8080")
+	fmt.Println("Started server on port 8080")
 
 	for {
 		conn, err := listener.Accept()

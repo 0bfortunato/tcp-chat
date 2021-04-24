@@ -1,7 +1,5 @@
 package main
 
-import "github.com/gookit/color"
-
 type commandID int
 
 const (
@@ -16,5 +14,4 @@ type command struct {
 	id     commandID
 	client *client
 	args   []string
-	color  color.Basic
 }
