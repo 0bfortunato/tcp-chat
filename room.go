@@ -1,6 +1,10 @@
 package main
 
-import "net"
+import (
+	"net"
+
+	"github.com/gookit/color"
+)
 
 type room struct {
 	name    string
@@ -10,7 +14,7 @@ type room struct {
 func (r *room) broadcast(sender *client, msg string) {
 	for addr, m := range r.members {
 		if sender.conn.RemoteAddr() != addr {
-			m.msg(msg)
+			m.msg(color.White, msg)
 		}
 	}
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net"
 	"strings"
+
+	"github.com/gookit/color"
 )
 
 type client struct {
@@ -32,30 +34,35 @@ func (c *client) readInput() {
 				id:     CMD_NICK,
 				client: c,
 				args:   args,
+				color:  color.FgMagenta,
 			}
 		case "/join":
 			c.commands <- command{
 				id:     CMD_JOIN,
 				client: c,
 				args:   args,
+				color:  color.Green,
 			}
 		case "/rooms":
 			c.commands <- command{
 				id:     CMD_ROOMS,
 				client: c,
 				args:   args,
+				color:  color.FgCyan,
 			}
 		case "/msg":
 			c.commands <- command{
 				id:     CMD_MSG,
 				client: c,
 				args:   args,
+				color:  color.BgDefault,
 			}
 		case "/quit":
 			c.commands <- command{
 				id:     CMD_QUIT,
 				client: c,
 				args:   args,
+				color:  color.Red,
 			}
 
 		default:
@@ -68,6 +75,6 @@ func (c *client) err(err error) {
 	c.conn.Write([]byte("Error: " + err.Error() + "\n"))
 }
 
-func (c *client) msg(msg string) {
+func (c *client) msg(color color.Basic, msg string) {
 	c.conn.Write([]byte(">" + msg + "\n"))
 }
