@@ -2,4 +2,4 @@
 
 [] add colors for each nick
 
-[] add support for use nickname which contains spaces
+[DONE] add support for use nickname which contains spaces

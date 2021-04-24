@@ -16,5 +16,5 @@ type command struct {
 	id     commandID
 	client *client
 	args   []string
-	color  color.Color
+	color  color.Basic
 }

@@ -40,7 +40,7 @@ func (s *server) run() {
 
 func (s *server) newClient(conn net.Conn) {
 	//log.Printf("New client has connected: %s", conn.RemoteAddr().String())
-	color.Yellow.Printf("New client has connected: %s", conn.RemoteAddr().String())
+	color.BgHiMagenta.Printf("New client has connected: %s\n", conn.RemoteAddr().String())
 
 	c := &client{
 		conn:     conn,
@@ -52,20 +52,21 @@ func (s *server) newClient(conn net.Conn) {
 }
 
 func (s *server) nick(c *client, args []string) {
-	if len(args) < 2 {
-		c.msg(color.Red, "Nick is required. Usage: /nick <NAME>")
+	nick := strings.TrimSpace(strings.Join(args[1:], " "))
+	if nick == "" {
+		c.err(fmt.Errorf("You must provide a nick"))
 		return
 	}
 
-	c.nick = args[1]
-	c.msg(color.BgGray, fmt.Sprintf("All right, I will call you %s", c.nick))
+	c.nick = nick
+	c.msg(fmt.Sprintf("All right, I will call you %s", c.nick))
 
 }
 
 func (s *server) join(c *client, args []string) {
 
 	if len(args) < 2 {
-		c.msg(color.Gray, "Room name is required. Usage: /join <ROOM-NAME>")
+		c.msg("Room name is required. Usage: /join <ROOM-NAME>")
 		return
 
 	}
@@ -89,7 +90,7 @@ func (s *server) join(c *client, args []string) {
 
 	r.broadcast(c, fmt.Sprintf("%s joined the room", c.nick))
 
-	c.msg(color.Green, fmt.Sprintf("Welcome to %s", roomName))
+	c.msg(fmt.Sprintf("Welcome to %s", roomName))
 }
 
 func (s *server) listRooms(c *client) {
@@ -98,16 +99,24 @@ func (s *server) listRooms(c *client) {
 		rooms = append(rooms, name)
 	}
 
-	c.msg(color.BgBlack, fmt.Sprintf("Avaible rooms: %s", strings.Join(rooms, ", ")))
+	c.msg(fmt.Sprintf("Avaible rooms: %s", strings.Join(rooms, ", ")))
 }
 
 func (s *server) msg(c *client, args []string) {
-	if len(args) < 2 {
-		c.msg(color.Red, "Message is required, usage: /msg <MSG>")
+	// Checks if c.room is nil, otherwise it will cause runtime error
+	// `nil pointer reference`
+	if c.room == nil {
+		c.msg("You need join a room before send messages")
 		return
 	}
+
+	if len(args) < 2 {
+		c.msg("Message is required, usage: /msg <MSG>")
+		return
+	}
+
 	msg := strings.Join(args[1:], " ")
-	c.room.broadcast(c, c.nick+": "+msg)
+	c.room.broadcast(c, c.nick+"-> "+msg)
 }
 
 func (s *server) quit(c *client) {
@@ -115,7 +124,7 @@ func (s *server) quit(c *client) {
 
 	s.quitCurrentRoom(c)
 
-	c.msg(color.Cyan, "Sad to see u go :/")
+	c.msg("Sad to see u go :/")
 	c.conn.Close()
 }
 

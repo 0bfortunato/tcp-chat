@@ -34,21 +34,21 @@ func (c *client) readInput() {
 				id:     CMD_NICK,
 				client: c,
 				args:   args,
-				color:  color.FgMagenta,
+				color:  color.BgBlack,
 			}
 		case "/join":
 			c.commands <- command{
 				id:     CMD_JOIN,
 				client: c,
 				args:   args,
-				color:  color.Green,
+				color:  color.FgDarkGray,
 			}
 		case "/rooms":
 			c.commands <- command{
 				id:     CMD_ROOMS,
 				client: c,
 				args:   args,
-				color:  color.FgCyan,
+				color:  color.Magenta,
 			}
 		case "/msg":
 			c.commands <- command{
@@ -62,7 +62,7 @@ func (c *client) readInput() {
 				id:     CMD_QUIT,
 				client: c,
 				args:   args,
-				color:  color.Red,
+				color:  color.BgBlue,
 			}
 
 		default:
@@ -75,6 +75,6 @@ func (c *client) err(err error) {
 	c.conn.Write([]byte("Error: " + err.Error() + "\n"))
 }
 
-func (c *client) msg(color color.Basic, msg string) {
-	c.conn.Write([]byte(">" + msg + "\n"))
+func (c *client) msg(msg string) {
+	c.conn.Write([]byte("-> " + msg + "\n"))
 }
