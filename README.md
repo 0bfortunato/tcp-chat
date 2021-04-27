@@ -1,3 +1,5 @@
+### TCP chat made with golang
+
 # Commands
 
 - `/nick <name>` - get a name, otherwise user will stay anonymous.
@@ -5,3 +7,7 @@
 - `/rooms` - show list of available rooms to join.
 - `/msg <msg>` - broadcast message to everyone in a room.
 - `/quit` - disconnects from the chat server.
+
+# Used Packages 
+
+- Just the color package by fatih: `https://github.com/fatih/color`

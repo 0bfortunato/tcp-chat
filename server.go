@@ -54,24 +54,24 @@ func (s *server) nick(c *client, args []string) {
 	nick := strings.TrimSpace(strings.Join(args[1:], " "))
 	if nick == "" {
 		//c.err(fmt.Errorf("you must provide a nick"))
-		error := color.New(color.FgRed, color.BgBlack).FprintfFunc()
-		error(c.conn, "error: you must provide a nick\n")
+		errColor := colorize("errorColor").FprintFunc()
+		errColor(c.conn, "error: you must provide a nick\n")
 		return
 	}
 
 	c.nick = nick
 	//c.msg(fmt.Sprintf("All right, I will call you %s", c.nick))
-	sucess := color.New(color.FgBlue).FprintfFunc()
-	sucess(c.conn, "all right, i will call you %s\n", c.nick)
+	sucessColor := colorize("sucessColor").FprintfFunc()
+	sucessColor(c.conn, "all right, i will call you %s\n", c.nick)
 
 }
 
 func (s *server) join(c *client, args []string) {
 
 	if len(args) < 2 {
-		c.msg("room name is required. Usage: /join <ROOM-NAME>")
+		errColor := colorize("errorColor").FprintFunc()
+		errColor(c.conn, "room name is required. Usage: /join <ROOM-NAME>\n")
 		return
-
 	}
 
 	roomName := args[1]
@@ -93,7 +93,8 @@ func (s *server) join(c *client, args []string) {
 
 	r.broadcast(c, fmt.Sprintf("%s joined the room", c.nick))
 
-	c.msg(fmt.Sprintf("Welcome to %s", roomName))
+	infoColor := colorize("infoColor").FprintfFunc()
+	infoColor(c.conn, "Welcome to %s\n", roomName)
 }
 
 func (s *server) listRooms(c *client) {
@@ -109,12 +110,15 @@ func (s *server) msg(c *client, args []string) {
 	// Checks if c.room is nil, otherwise it will cause runtime error
 	// `nil pointer reference`
 	if c.room == nil {
-		c.msg("You need join a room before send messages")
+		errColor := colorize("errColor").FprintFunc()
+		errColor(c.conn, "You need join a room before send messages")
 		return
 	}
 
 	if len(args) < 2 {
-		c.msg("Message is required, usage: /msg <MSG>")
+
+		errColor := colorize("errColor").FprintFunc()
+		errColor(c.conn, "Message is required, usage: /msg <MSG>")
 		return
 	}
 
@@ -123,18 +127,34 @@ func (s *server) msg(c *client, args []string) {
 }
 
 func (s *server) quit(c *client) {
-	color.MagentaString("log: client has left the chat: %s", c.conn.RemoteAddr().String())
+	infoColor := colorize("infoColor").FprintfFunc()
+	infoColor(c.conn, "log: client has left the chat: %s", c.conn.RemoteAddr().String())
 
 	s.quitCurrentRoom(c)
 
-	c.msg("Sad to see u go :/")
+	infoColor(c.conn, "Sad to see u go :/")
 	c.conn.Close()
 }
 
 func (s *server) quitCurrentRoom(c *client) {
+
 	if c.room != nil {
 		oldRoom := s.rooms[c.room.name]
 		delete(s.rooms[c.room.name].members, c.conn.RemoteAddr())
-		oldRoom.broadcast(c, color.HiMagentaString("log: %s has left the room", c.nick))
+		oldRoom.broadcast(c, color.CyanString("log: %s has left the room", c.nick))
 	}
+}
+
+func colorize(s string) *color.Color {
+
+	switch {
+	case s == "errorColor":
+		return color.New(color.FgRed, color.BgBlack)
+	case s == "sucessColor":
+		return color.New(color.FgGreen, color.BgBlack)
+	case s == "infoColor":
+		return color.New(color.FgHiMagenta, color.BlinkSlow)
+	}
+
+	return color.New()
 }
