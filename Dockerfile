@@ -1,4 +1,4 @@
-FROM golang:1.16.3-buster
+FROM golang:1.16.3-alpine3.13
 
 # Set the Current Working Directory inside the container
 WORKDIR $GOPATH/src/github.com/tcp-chat
