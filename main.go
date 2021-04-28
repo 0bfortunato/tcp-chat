@@ -13,16 +13,16 @@ func main() {
 	// List on port 8080
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
-		log.Fatalf("Unable to start server: %s", err.Error())
+		log.Fatalf("Unable to start server: %s\n", err.Error())
 	}
 
 	defer listener.Close()
-	fmt.Println("Started server on port 8080")
+	fmt.Printf("Started server on port: %s\n", listener.Addr().String())
 
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			log.Printf("Unable to accept connection: %s", err.Error())
+			log.Printf("Unable to accept connection: %s\n", err.Error())
 			continue
 		}
 

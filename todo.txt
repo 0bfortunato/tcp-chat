@@ -1,5 +1,7 @@
-[] skip line after each message
+[DONE] skip line after each message
 
-[] add colors for each nick
+[DONE] add colors
 
 [DONE] add support for use nickname which contains spaces
+
+[] add environment variables to docker display colors
