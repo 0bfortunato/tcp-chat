@@ -91,7 +91,7 @@ func (s *server) join(c *client, args []string) {
 	s.quitCurrentRoom(c)
 	c.room = r
 
-	r.broadcast(c, fmt.Sprintf("%s joined the room", c.nick))
+	r.broadcast(c, fmt.Sprintf("%s joined the room\n", c.nick))
 
 	infoColor := colorize("infoColor").FprintfFunc()
 	infoColor(c.conn, "Welcome to %s\n", roomName)
@@ -103,7 +103,7 @@ func (s *server) listRooms(c *client) {
 		rooms = append(rooms, name)
 	}
 
-	c.msg(fmt.Sprintf("Avaible rooms: %s", strings.Join(rooms, ", ")))
+	c.msg(fmt.Sprintf("Avaible rooms: %s\n", strings.Join(rooms, ", ")))
 }
 
 func (s *server) msg(c *client, args []string) {
@@ -111,14 +111,14 @@ func (s *server) msg(c *client, args []string) {
 	// `nil pointer reference`
 	if c.room == nil {
 		errColor := colorize("errColor").FprintFunc()
-		errColor(c.conn, "You need join a room before send messages")
+		errColor(c.conn, "You need join a room before send messages\n")
 		return
 	}
 
 	if len(args) < 2 {
 
 		errColor := colorize("errColor").FprintFunc()
-		errColor(c.conn, "Message is required, usage: /msg <MSG>")
+		errColor(c.conn, "Message is required, usage: /msg <MSG>\n")
 		return
 	}
 
@@ -128,11 +128,11 @@ func (s *server) msg(c *client, args []string) {
 
 func (s *server) quit(c *client) {
 	infoColor := colorize("infoColor").FprintfFunc()
-	infoColor(c.conn, "log: client has left the chat: %s", c.conn.RemoteAddr().String())
+	infoColor(c.conn, "log: client has left the chat: %s\n", c.conn.RemoteAddr().String())
 
 	s.quitCurrentRoom(c)
 
-	infoColor(c.conn, "Sad to see u go :/")
+	infoColor(c.conn, "Sad to see u go\n")
 	c.conn.Close()
 }
 
