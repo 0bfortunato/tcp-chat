@@ -21,7 +21,7 @@ If you want teste outside the container, you can use telnet command, but for thi
 
 The IP is like `172.17.0.x`
 
-And finally, telnet 172.17.0.x 8080
+And finally, `telnet 172.17.0.x 8080`
 Where 172.17.0.x is the container ip, and the 8080 is the exposed port
 
 ### Used Packages 
