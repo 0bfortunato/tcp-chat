@@ -17,3 +17,6 @@ RUN make build
 
 # Run the executable
 CMD ["tcp-chat"]
+
+# Expose ports to external world
+EXPOSE 8080/tcp
